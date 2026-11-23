@@ -98,8 +98,9 @@ old_unused_scripts_or_functions/   Legacy scripts, kept for reference only
 
 Add all of these to the MATLAB path before running:
 
-- **[HippoCookBook](https://github.com/valegarman/HippoCookBook)** (Manu's code) — produces the input files listed below. Add it, with its subfolders, to the MATLAB path.
-- **Functions called here but not included in this repo**: `getLFP`, `InIntervals`, `SubtractIntervals`, `ConsolidateIntervals`, `CSD`, `bz_*` (e.g. `bz_Filter`, `bz_Diff`) and `ProcessCellMetrics` (spike analysis, CellExplorer). They should come with HippoCookBook and its dependencies (buzcode / FMAToolbox / CellExplorer); *TODO: confirm that a clean HippoCookBook install covers all of them.*
+- **[HippoCookBook](https://github.com/valegarman/HippoCookBook)** (Manu's code) — produces the input files listed below. Add it, with its subfolders, to the MATLAB path. It also provides `getLFP`, `bz_Filter`, `bz_Diff`, `computeCSD`, `run_umap`, `SleepScoreMaster` and other helpers used here.
+- **[CellExplorer](https://github.com/petersenpeter/CellExplorer)** (a HippoCookBook dependency; add it with its subfolders) — provides `InIntervals`, `SubtractIntervals`, `ConsolidateIntervals`, `ProcessCellMetrics`, `loadSession` and `CCG`. Note that these are **not** in HippoCookBook itself.
+- **[cnn-matlab](https://github.com/PridaLab/cnn-matlab)** (PridaLab) — provides `detect_ripples_cnn` and `get_intervals`, used by `findRipples_CNN_modpeak.m` and `rippleMasterDetector.m`.
 
 ### Paths to edit
 
@@ -216,7 +217,8 @@ Stand-alone scripts, run **after** the main pipeline. Each one asks for its own 
 ## Known issues / TODO
 
 - [ ] Add the MATLAB version used and confirm the required toolboxes.
-- [ ] Confirm that a clean HippoCookBook install provides every external function listed under *Requirements*.
+- [ ] `ripplefinalscript.m` calls names that do not exist in this repo: `buzcode_eventCSD` (the file is `buzcode_eacheventCSD.m`) and `analyze_ripple_measure_lme`, `analyze_ripple_measure_glme` and `analyze_ripple_measure_lme_figures` (the files are `analyze_ripple_measure_glme_generalized.m` and `analyze_ripple_measure_lme_figures_generalized.m`; there is no `analyze_ripple_measure_lme`). Update the calls or the file names.
+- [ ] `rippleMasterDetector.m` has a `'filtercnn'` branch that calls `findRipples_wCNN`, which is not available anywhere. The pipeline uses the `findRipples_CNN_modpeak` branch, so it is not affected.
 - [ ] Hard-coded CNN/Python paths in P3.0.
 - [ ] Three versions of `ps1to120` (`_Paria`, `_Alberto`, `_Rut`): keep only the ones still in use (`_Rut` is not called by anything).
 - [ ] `optional_analysis/spikeanalysis/mandatory_functions/` contains ripple/PSD statistics and scripts, not only spike helpers; consider renaming/splitting (e.g. `stats/`).
