@@ -4,7 +4,7 @@ MATLAB pipeline for hippocampal LFP analysis (theta/gamma during locomotion, 1�
 
 Maintained by the **L234 lab, CNC**.
 
-> **Important:** this repo does **not** contain the preprocessing step. First run the code from Manu (HippoCookbook-style preprocessing). The scripts here start from its output.
+> **Important:** this repo does **not** contain the preprocessing step. First run the preprocessing from [HippoCookBook](https://github.com/valegarman/HippoCookBook) (Manu's code). The scripts here start from its output.
 
 ---
 
@@ -47,7 +47,12 @@ LFPpipeline.m                      Main pipeline (P1 → P3 → P1R → P2)
 README.md
 
 mandatory_functions/               Functions required by LFPpipeline.m
+  runThetaStage.m                  Runs the theta/run stage over all groups and sessions
   processRecording.m               Processes ONE recording (theta/run/non-run)
+  detectThetaEpochs.m              Theta epoch detection
+  getWavelet.m                     Wavelet transform helper
+  saveStates.m                     Saves the .states.mat files
+  getAnimalID.m                    Animal ID from the session folder name
   extractEpochPower.m              Power extraction per epoch
   storeRunPower.m / storeNonRunPower.m
   buildRow.m                       Builds table rows from epoch power
@@ -87,21 +92,18 @@ old_unused_scripts_or_functions/   Legacy scripts, kept for reference only
 
 - MATLAB (version used: **TODO – fill in**)
 - Toolboxes (likely needed — confirm): Signal Processing, Statistics and Machine Learning (`fitlme`/`fitglme`), Parallel Computing (only if you re-enable `parfor`)
-- Python environment with the CNN ripple detector (`cnn-env`) and the `cnn-matlab-master` repository
+- Python environment with the CNN ripple detector (`cnn-env`) and the [cnn-matlab](https://github.com/PridaLab/cnn-matlab) repository (PridaLab)
 
 ### External code (not included in this repo)
 
 Add all of these to the MATLAB path before running:
 
-- **Manu's preprocessing code** — produces the input files listed below. **TODO: add link**
-- **buzcode / FMAToolbox / HippoCookbook** — functions used here: `getLFP`, `InIntervals`, `SubtractIntervals`, `ConsolidateIntervals`, `CSD`, `bz_*` (e.g. `bz_FindRipples`, `bz_RippleStats`, `bz_SaveRippleEvents`)
-- **CellExplorer** — `ProcessCellMetrics` (spike analysis)
-- **Other helpers called by the pipeline**: `detectThetaEpochs`, `getWavelet`, `saveStates`, `getAnimalID`
-  *(TODO: indicate where each one comes from or add it to this repo)*
+- **[HippoCookBook](https://github.com/valegarman/HippoCookBook)** (Manu's code) — produces the input files listed below. Add it, with its subfolders, to the MATLAB path.
+- **Functions called here but not included in this repo**: `getLFP`, `InIntervals`, `SubtractIntervals`, `ConsolidateIntervals`, `CSD`, `bz_*` (e.g. `bz_Filter`, `bz_Diff`) and `ProcessCellMetrics` (spike analysis, CellExplorer). They should come with HippoCookBook and its dependencies (buzcode / FMAToolbox / CellExplorer); *TODO: confirm that a clean HippoCookBook install covers all of them.*
 
 ### Paths to edit
 
-In **P3.0** of `LFPpipeline.m`, set your own paths:
+In **P3.0** of `LFPpipeline.m`, set your own paths (to the local `cnn-matlab` copy and the Python executable of `cnn-env`):
 
 ```matlab
 CNN_MODEL_PATH = 'C:\Users\usuario\cnn-matlab-master\cnn';
@@ -213,14 +215,13 @@ Stand-alone scripts, run **after** the main pipeline. Each one asks for its own 
 
 ## Known issues / TODO
 
-- [ ] `runThetaStage` (called by `LFPpipeline.m`) is currently defined only in `old_unused_scripts_or_functions/PIPELINELFPpostmanuanalysis_def.m`. Move it to `mandatory_functions/` before deleting the old folder.
-- [ ] Add `getAnimalID.m` (used in P3.5) to the repo.
-- [ ] Document where `detectThetaEpochs`, `getWavelet` and `saveStates` come from.
-- [ ] Add the link to Manu's code and the MATLAB version used.
+- [ ] Add the MATLAB version used and confirm the required toolboxes.
+- [ ] Confirm that a clean HippoCookBook install provides every external function listed under *Requirements*.
 - [ ] Hard-coded CNN/Python paths in P3.0.
-- [ ] Three versions of `ps1to120` (`_Paria`, `_Alberto`, `_Rut`): keep only the ones still in use.
+- [ ] Three versions of `ps1to120` (`_Paria`, `_Alberto`, `_Rut`): keep only the ones still in use (`_Rut` is not called by anything).
 - [ ] `optional_analysis/spikeanalysis/mandatory_functions/` contains ripple/PSD statistics and scripts, not only spike helpers; consider renaming/splitting (e.g. `stats/`).
-- [ ] `spikeanalysis/mandatory_functions/spike_analysis_pipeline.m` starts with a stray `e` before the first `%%` line (syntax error) and overlaps with `analyzecellmetrics_Alberto.m`.
+- [ ] `spike_analysis_pipeline.m` overlaps with `analyzecellmetrics_Alberto.m`; keep one.
+- [ ] `old_unused_scripts_or_functions/` no longer holds anything the pipeline needs (`runThetaStage` now lives in `mandatory_functions/`); it can be removed since git keeps the history.
 
 ---
 
